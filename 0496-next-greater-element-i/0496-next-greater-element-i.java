@@ -1,33 +1,37 @@
+import java.util.HashMap;
+import java.util.Stack;
+
 class Solution {
     public int[] nextGreaterElement(int[] nums1, int[] nums2) {
         int l1 = nums1.length;
         int l2 = nums2.length;
-        int arr[] = new int[l1];
+        int[] result = new int[l1];
         
-        for(int i = 0; i < l1; i++) {
-            boolean found = false;
-            for(int j = 0; j < l2; j++) {
-                if(nums1[i] == nums2[j]) {
-                    found = true;
-                    // Look for the next greater element
-                    boolean greaterFound = false;
-                    for(int k = j + 1; k < l2; k++) {
-                        if(nums2[k] > nums2[j]) {
-                            arr[i] = nums2[k];
-                            greaterFound = true;
-                            break;
-                        }
-                    }
-                    if(!greaterFound) {
-                        arr[i] = -1;
-                    }
-                    break; // Break out of the inner loop once the element is found
-                }
+        // Map to store the next greater element for each element in nums2
+        HashMap<Integer, Integer> nextGreaterMap = new HashMap<>();
+        // Stack to keep track of elements for which we are finding the next greater
+        Stack<Integer> stack = new Stack<>();
+        
+        // Iterate over nums2 to fill the next greater map
+        for (int i = 0; i < l2; i++) {
+            // While stack is not empty and the current element is greater than the element at the top of the stack
+            while (!stack.isEmpty() && nums2[i] > stack.peek()) {
+                nextGreaterMap.put(stack.pop(), nums2[i]);
             }
-            if(!found) {
-                arr[i] = -1; // In case nums1[i] is not found in nums2, though it's stated to be a subset
-            }
+            // Push the current element onto the stack
+            stack.push(nums2[i]);
         }
-        return arr;
+        
+        // For elements still in the stack, there is no next greater element, so map them to -1
+        while (!stack.isEmpty()) {
+            nextGreaterMap.put(stack.pop(), -1);
+        }
+        
+        // Fill the result array using the next greater map
+        for (int i = 0; i < l1; i++) {
+            result[i] = nextGreaterMap.get(nums1[i]);
+        }
+        
+        return result;
     }
 }
