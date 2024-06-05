@@ -1,31 +1,31 @@
-import java.util.Stack;
-
 class Solution {
-    public String decodeString(String s) {
+    String decodeString(String s) {
         Stack<Integer> countStack = new Stack<>();
-        Stack<String> stringStack = new Stack<>();
-        String currentString = "";
+        Stack<StringBuilder> stringStack = new Stack<>();
+        StringBuilder currentString = new StringBuilder();
         int k = 0;
-        for (int i = 0; i < s.length(); i++) {
-            char currentChar = s.charAt(i);
-            if (Character.isDigit(currentChar)) {
-                k = k * 10 + (currentChar - '0');
-            } else if (currentChar == '[') {
+        for (char ch : s.toCharArray()) {
+            if (Character.isDigit(ch)) {
+                k = k * 10 + ch - '0';
+            } else if (ch == '[') {
+                // push the number k to countStack
                 countStack.push(k);
+                // push the currentString to stringStack
                 stringStack.push(currentString);
-                currentString = "";
+                // reset currentString and k
+                currentString = new StringBuilder();
                 k = 0;
-            } else if (currentChar == ']') {
-                int repeatTimes = countStack.pop();
-                StringBuilder decodedString = new StringBuilder(stringStack.pop());
-                for (int j = 0; j < repeatTimes; j++) {
+            } else if (ch == ']') {
+                StringBuilder decodedString = stringStack.pop();
+                // decode currentK[currentString] by appending currentString k times
+                for (int currentK = countStack.pop(); currentK > 0; currentK--) {
                     decodedString.append(currentString);
                 }
-                currentString = decodedString.toString();
+                currentString = decodedString;
             } else {
-                currentString += currentChar;
+                currentString.append(ch);
             }
         }
-        return currentString;
+        return currentString.toString();
     }
 }
