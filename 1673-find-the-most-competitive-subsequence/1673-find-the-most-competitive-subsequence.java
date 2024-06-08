@@ -1,19 +1,27 @@
+import java.util.Stack;
+
 class Solution {
     public int[] mostCompetitive(int[] nums, int k) {
+        Stack<Integer> stack = new Stack<>();
         int n = nums.length;
-        int[] stack = new int[k];
-        int top = -1; // index to manage the stack
 
         for (int i = 0; i < n; i++) {
-            // if the current element is smaller than the top of the stack and we have enough elements left
-            while (top >= 0 && stack[top] > nums[i] && top + (n - i) >= k) {
-                top--;
+            // If the current element is smaller than the top of the stack and we have enough elements left
+            while (!stack.isEmpty() && stack.peek() > nums[i] && stack.size() + (n - i) > k) {
+                stack.pop();
             }
-            // if there is still space in the stack, add the current element
-            if (top + 1 < k) {
-                stack[++top] = nums[i];
+            // If there is still space in the stack, add the current element
+            if (stack.size() < k) {
+                stack.push(nums[i]);
             }
         }
-        return stack;
+
+        // Convert the stack to an array
+        int[] result = new int[k];
+        for (int i = k - 1; i >= 0; i--) {
+            result[i] = stack.pop();
+        }
+
+        return result;
     }
 }
