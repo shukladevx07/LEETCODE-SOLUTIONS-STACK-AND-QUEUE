@@ -1,22 +1,24 @@
 class Solution {
     public boolean checkSubarraySum(int[] nums, int k) {
-        int n = nums.length;
-        for (int i = 0; i < n; i++) {
-            for (int j = i + 1; j < n; j++) {
-                if (helper(nums, i, j, k)) {
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(0, -1);  // Handle the edge case for sum from start
+        int sum = 0;
+
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+            
+            if (k != 0) {
+                sum %= k;
+            }
+            
+            if (map.containsKey(sum)) {
+                if (i - map.get(sum) > 1) {  // Check if the subarray length is at least 2
                     return true;
                 }
+            } else {
+                map.put(sum, i);  // Only put the first occurrence to maintain the largest possible subarray
             }
         }
         return false;
-    }
-    public boolean helper(int[] arr, int i, int j, int k) {
-        int sum = 0;
-        int count = 0;
-        for (int index = i; index <= j; index++) {
-            sum += arr[index];
-            count++;
-        }
-        return sum % k == 0 && count >= 2;
     }
 }
