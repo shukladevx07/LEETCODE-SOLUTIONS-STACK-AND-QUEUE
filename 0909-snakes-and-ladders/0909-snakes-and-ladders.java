@@ -1,58 +1,45 @@
-import java.util.*;
-
 class Solution {
-    public int snakesAndLadders(int[][] board) {
-        int n = board.length;
+     public int snakesAndLadders(int[][] board) {
+      int n = board.length;
+        int steps = 0;
+      Queue<Integer> q = new LinkedList<Integer>();
+      boolean visited[][] = new boolean[n][n];
+       q.add(1);
+       visited[n-1][0] = true;
+       while(!q.isEmpty()){
+         int size = q.size();
         
-        // Convert board's 2D coordinates to a 1D label
-        int[] flattenBoard = new int[n * n + 1];
-        int idx = 1;
-        boolean isRight = true;
-        for (int i = n - 1; i >= 0; i--) {
-            if (isRight) {
-                for (int j = 0; j < n; j++) {
-                    flattenBoard[idx++] = board[i][j];
-                }
-            } else {
-                for (int j = n - 1; j >= 0; j--) {
-                    flattenBoard[idx++] = board[i][j];
-                }
-            }
-            isRight = !isRight;
-        }
-
-        // BFS Initialization
-        Queue<Integer> queue = new LinkedList<>();
-        queue.offer(1);
-        boolean[] visited = new boolean[n * n + 1];
-        visited[1] = true;
-        int moves = 0;
-
-        // BFS Process
-        while (!queue.isEmpty()) {
-            int size = queue.size();
-            for (int i = 0; i < size; i++) {
-                int current = queue.poll();
-                if (current == n * n) {
-                    return moves;
-                }
-                for (int j = 1; j <= 6; j++) {
-                    int next = current + j;
-                    if (next > n * n) {
-                        break;
-                    }
-                    if (flattenBoard[next] != -1) {
-                        next = flattenBoard[next];
-                    }
-                    if (!visited[next]) {
-                        visited[next] = true;
-                        queue.offer(next);
-                    }
-                }
-            }
-            moves++;
-        }
-        
+          for(int i =0; i <size; i++){
+              int x = q.poll();
+              if(x == n*n) return steps;
+              for(int k=1; k <=6; k++){
+                  if(k+x > n*n) break;
+                  int pos[] = findCoordinates(k+x, n);
+                  int r = pos[0];
+                  int c = pos[1];
+                  if(visited[r][c] == true) continue;
+                  visited[r][c] = true;
+                  if(board[r][c] == -1){
+                      q.add(k+x);
+                  }else{
+                      q.add(board[r][c]);
+                  }
+              }
+          }
+          
+        steps++;
+       
+      }    
         return -1;
+    }
+    
+   public int[] findCoordinates(int curr, int n) {
+        int r = n - (curr - 1) / n  -1;
+        int c = (curr - 1) % n;
+        if (r % 2 == n % 2) {
+            return new int[]{r, n - 1 - c};
+        } else {
+            return new int[]{r, c};
+        }
     }
 }
