@@ -1,16 +1,23 @@
 class Solution {
     public int longestValidParentheses(String s) {
-        int maxLen = 0;
-        int[] dp = new int[s.length()];
+        if (s.length() == 0) {
+            return 0;
+        }
         
-        for (int i = 1; i < s.length(); i++) {
-            if (s.charAt(i) == ')') {
-                if (s.charAt(i - 1) == '(') {
-                    dp[i] = (i >= 2 ? dp[i - 2] : 0) + 2;
-                } else if (i - dp[i - 1] > 0 && s.charAt(i - dp[i - 1] - 1) == '(') {
-                    dp[i] = dp[i - 1] + ((i - dp[i - 1] >= 2) ? dp[i - dp[i - 1] - 2] : 0) + 2;
+        int maxLen = 0;
+        Stack<Integer> stack = new Stack<>();
+        stack.push(-1);  // Base index for the first valid substring
+        
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(') {
+                stack.push(i);
+            } else {
+                stack.pop();
+                if (stack.isEmpty()) {
+                    stack.push(i);
+                } else {
+                    maxLen = Math.max(maxLen, i - stack.peek());
                 }
-                maxLen = Math.max(maxLen, dp[i]);
             }
         }
         
