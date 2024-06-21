@@ -15,33 +15,25 @@
  */
 class Solution {
     public int getMinimumDifference(TreeNode root) {
-        List<Integer> list=new ArrayList<>();
-        helper(root,list);
-        int arr[]=new int[list.size()];
-        for(int i=0;i<list.size();i++){
-            arr[i]=list.get(i);
+        List<Integer> list = new ArrayList<>();
+        helper(root, list);
+        Collections.sort(list);
+        
+        int minDiff = Integer.MAX_VALUE;
+        for (int i = 1; i < list.size(); i++) {
+            int diff = list.get(i) - list.get(i - 1);
+            minDiff = Math.min(minDiff, diff);
         }
-        int min1=Integer.MAX_VALUE;
-        int min2=Integer.MAX_VALUE;
-       for(int i=0;i<arr.length;i++){
-        if(arr[i]<min1){
-            min1=arr[i];
-        }
-       }
-       for(int i=0;i<arr.length;i++){
-        if(arr[i]<min2 &&arr[i]!=min1){
-            min2=arr[i];
-        }
-       }
-       return min2-min1;
+        
+        return minDiff;
     }
-    private List<Integer> helper(TreeNode node,List<Integer> list){
-        if(node==null){
-            return list;
+
+    private void helper(TreeNode node, List<Integer> list) {
+        if (node == null) {
+            return;
         }
         list.add(node.val);
-        helper(node.left,list);
-        helper(node.right,list);
-        return list;
+        helper(node.left, list);
+        helper(node.right, list);
     }
 }
