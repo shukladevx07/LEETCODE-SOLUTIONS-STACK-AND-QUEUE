@@ -1,61 +1,51 @@
-/**
- * Definition for a binary tree node.
- * public class TreeNode {
- *     int val;
- *     TreeNode left;
- *     TreeNode right;
- *     TreeNode(int x) { val = x; }
- * }
- */
+import java.util.*;
+
 class Solution {
     public List<Integer> distanceK(TreeNode root, TreeNode target, int k) {
         List<Integer> result = new ArrayList<>();
-        findDistance(root, target, k, result);
+        Map<TreeNode, TreeNode> parentMap = new HashMap<>();
+        // Step 1: Create a parent map using DFS
+        createParentMap(root, null, parentMap);
+
+        // Step 2: Perform BFS from the target node
+        Queue<TreeNode> queue = new LinkedList<>();
+        Set<TreeNode> visited = new HashSet<>();
+        queue.add(target);
+        visited.add(target);
+        int currentLevel = 0;
+
+        while (!queue.isEmpty()) {
+            if (currentLevel == k) {
+                for (TreeNode node : queue) {
+                    result.add(node.val);
+                }
+                return result;
+            }
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode current = queue.poll();
+                if (current.left != null && visited.add(current.left)) {
+                    queue.add(current.left);
+                }
+                if (current.right != null && visited.add(current.right)) {
+                    queue.add(current.right);
+                }
+                TreeNode parent = parentMap.get(current);
+                if (parent != null && visited.add(parent)) {
+                    queue.add(parent);
+                }
+            }
+            currentLevel++;
+        }
+
         return result;
     }
-    
-    private int findDistance(TreeNode node, TreeNode target, int k, List<Integer> result) {
-        if (node == null) {
-            return -1;
+
+    private void createParentMap(TreeNode node, TreeNode parent, Map<TreeNode, TreeNode> parentMap) {
+        if (node != null) {
+            parentMap.put(node, parent);
+            createParentMap(node.left, node, parentMap);
+            createParentMap(node.right, node, parentMap);
         }
-        
-        if (node == target) {
-            addSubtreeNodesAtDistanceK(node, k, result);
-            return 0;
-        }
-        
-        int leftDistance = findDistance(node.left, target, k, result);
-        if (leftDistance != -1) {
-            if (leftDistance + 1 == k) {
-                result.add(node.val);
-            } else {
-                addSubtreeNodesAtDistanceK(node.right, k - leftDistance - 2, result);
-            }
-            return leftDistance + 1;
-        }
-        
-        int rightDistance = findDistance(node.right, target, k, result);
-        if (rightDistance != -1) {
-            if (rightDistance + 1 == k) {
-                result.add(node.val);
-            } else {
-                addSubtreeNodesAtDistanceK(node.left, k - rightDistance - 2, result);
-            }
-            return rightDistance + 1;
-        }
-        
-        return -1;
-    }
-    
-    private void addSubtreeNodesAtDistanceK(TreeNode node, int k, List<Integer> result) {
-        if (node == null || k < 0) {
-            return;
-        }
-        if (k == 0) {
-            result.add(node.val);
-            return;
-        }
-        addSubtreeNodesAtDistanceK(node.left, k - 1, result);
-        addSubtreeNodesAtDistanceK(node.right, k - 1, result);
     }
 }
