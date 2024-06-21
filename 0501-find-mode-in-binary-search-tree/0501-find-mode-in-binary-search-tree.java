@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 class TreeNode {
     int val;
@@ -13,42 +14,44 @@ class TreeNode {
 }
 
 class Solution {
-    private Integer prev = null;
-    private int count = 0;
-    private int maxCount = 0;
-    private List<Integer> modes = new ArrayList<>();
-
     public int[] findMode(TreeNode root) {
-        inOrder(root);
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode current = root;
+        Integer prev = null;
+        int count = 0;
+        int maxCount = 0;
+        List<Integer> modes = new ArrayList<>();
+
+        while (current != null || !stack.isEmpty()) {
+            while (current != null) {
+                stack.push(current);
+                current = current.left;
+            }
+
+            current = stack.pop();
+
+            if (prev != null && current.val == prev) {
+                count++;
+            } else {
+                count = 1;
+            }
+
+            if (count > maxCount) {
+                maxCount = count;
+                modes.clear();
+                modes.add(current.val);
+            } else if (count == maxCount) {
+                modes.add(current.val);
+            }
+
+            prev = current.val;
+            current = current.right;
+        }
+
         int[] result = new int[modes.size()];
         for (int i = 0; i < modes.size(); i++) {
             result[i] = modes.get(i);
         }
         return result;
-    }
-
-    private void inOrder(TreeNode node) {
-        if (node == null) {
-            return;
-        }
-
-        inOrder(node.left);
-
-        if (prev != null && node.val == prev) {
-            count++;
-        } else {
-            count = 1;
-        }
-
-        if (count > maxCount) {
-            maxCount = count;
-            modes.clear();
-            modes.add(node.val);
-        } else if (count == maxCount) {
-            modes.add(node.val);
-        }
-
-        prev = node.val;
-        inOrder(node.right);
     }
 }
