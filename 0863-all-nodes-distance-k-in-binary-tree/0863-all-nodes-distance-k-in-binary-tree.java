@@ -1,51 +1,56 @@
-import java.util.*;
-
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
 class Solution {
+
+    List<Integer> ans = new ArrayList<>();
     public List<Integer> distanceK(TreeNode root, TreeNode target, int k) {
-        List<Integer> result = new ArrayList<>();
-        Map<TreeNode, TreeNode> parentMap = new HashMap<>();
-        // Step 1: Create a parent map using DFS
-        createParentMap(root, null, parentMap);
 
-        // Step 2: Perform BFS from the target node
-        Queue<TreeNode> queue = new LinkedList<>();
-        Set<TreeNode> visited = new HashSet<>();
-        queue.add(target);
-        visited.add(target);
-        int currentLevel = 0;
-
-        while (!queue.isEmpty()) {
-            if (currentLevel == k) {
-                for (TreeNode node : queue) {
-                    result.add(node.val);
-                }
-                return result;
-            }
-            int size = queue.size();
-            for (int i = 0; i < size; i++) {
-                TreeNode current = queue.poll();
-                if (current.left != null && visited.add(current.left)) {
-                    queue.add(current.left);
-                }
-                if (current.right != null && visited.add(current.right)) {
-                    queue.add(current.right);
-                }
-                TreeNode parent = parentMap.get(current);
-                if (parent != null && visited.add(parent)) {
-                    queue.add(parent);
-                }
-            }
-            currentLevel++;
-        }
-
-        return result;
+        printNode(root,target,k);
+        return ans;
+        
     }
 
-    private void createParentMap(TreeNode node, TreeNode parent, Map<TreeNode, TreeNode> parentMap) {
-        if (node != null) {
-            parentMap.put(node, parent);
-            createParentMap(node.left, node, parentMap);
-            createParentMap(node.right, node, parentMap);
+public void findNodeDistanceDown(TreeNode root,int k){
+    if(root==null || k<0)
+    return;
+    if(k==0){
+        ans.add(root.val);
+    }
+    findNodeDistanceDown(root.left,k-1);
+    findNodeDistanceDown(root.right,k-1);
+}
+    public int printNode(TreeNode root, TreeNode target, int k){
+        if(root==null || k<0 )
+        return -1;
+
+        if(root == target){
+            findNodeDistanceDown(root,k);
+            return 1;
         }
+
+        int l= printNode(root.left,target,k);
+        if(l!=-1){
+            if(l==k)
+            ans.add(root.val);
+            else
+            findNodeDistanceDown(root.right,k-l-1);
+            return 1+l;
+        }
+        int r= printNode(root.right,target,k);
+        if(r!=-1){
+            if(r==k)
+            ans.add(root.val);
+            else
+            findNodeDistanceDown(root.left,k-r-1);
+            return 1+r;
+        }
+        return -1;
     }
 }
