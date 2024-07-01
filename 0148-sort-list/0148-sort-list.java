@@ -1,41 +1,56 @@
-public class Solution {
-    private ListNode findMid(ListNode head) {
-        if (head == null || head.next == null)
+class Solution {
+    public ListNode sortList(ListNode head) {
+        if (head == null || head.next == null) {
             return head;
+        }
 
-        ListNode slow = head, fast = head;
-        while (fast.next != null && fast.next.next != null) {
+        // Step 1: Split the linked list into two halves
+        ListNode mid = getMid(head);
+        ListNode left = head;
+        ListNode right = mid.next;
+        mid.next = null;
+
+        // Step 2: Recursively sort each half
+        left = sortList(left);
+        right = sortList(right);
+
+        // Step 3: Merge the sorted halves
+        return merge(left, right);
+    }
+
+    private ListNode getMid(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head.next;
+
+        while (fast != null && fast.next != null) {
             slow = slow.next;
             fast = fast.next.next;
         }
+
         return slow;
     }
 
-    private ListNode merge(ListNode l1, ListNode l2) {
+    private ListNode merge(ListNode left, ListNode right) {
         ListNode dummy = new ListNode(0);
-        ListNode curr = dummy;
-        while (l1 != null && l2 != null) {
-            if (l1.val < l2.val) {
-                curr.next = l1;
-                l1 = l1.next;
-            } else {
-                curr.next = l2;
-                l2 = l2.next;
-            }
-            curr = curr.next;
-        }
-        curr.next = (l1 != null) ? l1 : l2;
-        return dummy.next;
-    }
+        ListNode current = dummy;
 
-    public ListNode sortList(ListNode head) {
-        if (head == null || head.next == null)
-            return head;
-        ListNode mid = findMid(head);
-        ListNode newHead = mid.next;
-        mid.next = null;
-        ListNode leftHalf = sortList(head);
-        ListNode rightHalf = sortList(newHead);
-        return merge(leftHalf, rightHalf);
+        while (left != null && right != null) {
+            if (left.val <= right.val) {
+                current.next = left;
+                left = left.next;
+            } else {
+                current.next = right;
+                right = right.next;
+            }
+            current = current.next;
+        }
+
+        if (left != null) {
+            current.next = left;
+        } else {
+            current.next = right;
+        }
+
+        return dummy.next;
     }
 }
