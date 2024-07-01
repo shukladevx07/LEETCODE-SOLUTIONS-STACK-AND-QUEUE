@@ -1,54 +1,41 @@
-/**
- * Definition for singly-linked list.
- * public class ListNode {
- *     int val;
- *     ListNode next;
- *     ListNode() {}
- *     ListNode(int val) { this.val = val; }
- *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
- * }
- */
+public class Solution {
+    private ListNode findMid(ListNode head) {
+        if (head == null || head.next == null)
+            return head;
 
-
-
- // pehle linked list ki length nikalo 
- // us length ka array bnao 
- // array mein elements store krado saare
- // array ko sort maardo 
- // phir vapas usko linked list mein store krado 
-
-class Solution
- {
-    public ListNode sortList(ListNode head) 
-    {
-        ListNode temp =head;
-         int length=0;
-        while(temp!=null)
-        {
-         length++;
-         temp=temp.next;
+        ListNode slow = head, fast = head;
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
         }
+        return slow;
+    }
 
-        int arr[] =new int[length];
-        temp=head;
-        int pos=0;
-        while(temp!=null)
-        {
-            arr[pos]=temp.val;
-            pos++;
-            temp=temp.next;
+    private ListNode merge(ListNode l1, ListNode l2) {
+        ListNode dummy = new ListNode(0);
+        ListNode curr = dummy;
+        while (l1 != null && l2 != null) {
+            if (l1.val < l2.val) {
+                curr.next = l1;
+                l1 = l1.next;
+            } else {
+                curr.next = l2;
+                l2 = l2.next;
+            }
+            curr = curr.next;
         }
+        curr.next = (l1 != null) ? l1 : l2;
+        return dummy.next;
+    }
 
-        Arrays.sort(arr);
-
-        temp=head;
-        int count=0;
-         while(temp!=null)
-         {
-        temp.val=arr[count];
-        count++;
-        temp=temp.next;
-         }
-         return head;
+    public ListNode sortList(ListNode head) {
+        if (head == null || head.next == null)
+            return head;
+        ListNode mid = findMid(head);
+        ListNode newHead = mid.next;
+        mid.next = null;
+        ListNode leftHalf = sortList(head);
+        ListNode rightHalf = sortList(newHead);
+        return merge(leftHalf, rightHalf);
     }
 }
