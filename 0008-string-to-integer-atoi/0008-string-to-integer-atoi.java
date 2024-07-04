@@ -1,17 +1,32 @@
-class Solution {
+public class Solution {
     public int myAtoi(String s) {
-        int i = 0, sign = 1, n = s.length();
-        for (; i < n && s.charAt(i) == ' '; i++) // Skip leading whitespace
-            ;
-        if (i < n && (s.charAt(i) == '+' || s.charAt(i) == '-')) { // Check for optional sign
-            sign = s.charAt(i++) == '-' ? -1 : 1;
+        int index = 0, sign = 1, total = 0;
+        // Check if empty string
+        if(s.length() == 0) return 0;
+
+        // Remove whitespaces
+        while(index < s.length() && s.charAt(index) == ' ')
+            index++;
+
+        // Get the sign
+        if(index < s.length() && (s.charAt(index) == '+' || s.charAt(index) == '-')){
+            sign = s.charAt(index) == '+' ? 1 : -1;
+            index++;
         }
-        long num = 0;
-        for (; i < n && Character.isDigit(s.charAt(i)) && num <= Integer.MAX_VALUE; i++) { // Convert digits to number
-            num = num * 10 + s.charAt(i) - '0';
+
+        // Convert to number and avoid overflow
+        while(index < s.length()){
+            int digit = s.charAt(index) - '0';
+            if(digit < 0 || digit > 9) break;
+
+            // Check for overflow
+            if(Integer.MAX_VALUE/10 < total || 
+                Integer.MAX_VALUE/10 == total && Integer.MAX_VALUE %10 < digit)
+                return sign == 1 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+
+            total = 10 * total + digit;
+            index++;
         }
-        num = Math.max(sign * num, Integer.MIN_VALUE);
-        num = Math.min(num, Integer.MAX_VALUE);
-        return (int) num;
+        return total * sign;
     }
 }
