@@ -1,15 +1,22 @@
 class Solution {
     public int minCostClimbingStairs(int[] cost) {
-    int n = cost.length;
-    int[] dp = new int[n];
-    for (int i = 0; i < n; i++) {
-        if (i < 2) {
-            dp[i] = cost[i];
-        } else {
-            dp[i] = cost[i] + Math.min(dp[i - 1], dp[i - 2]);
-        }
+        int n = cost.length;
+        int[] dp = new int[n]; // Initialize the memoization array
+        Arrays.fill(dp, -1); // Fill with -1 to indicate uncomputed states
+        return Math.min(minCost(n - 1, cost, dp), minCost(n - 2, cost, dp));
     }
-    return Math.min(dp[n - 1], dp[n - 2]);
-}
 
+    private int minCost(int i, int[] cost, int[] dp) {
+        if (i < 0) {
+            return 0;
+        }
+        if (i == 0 || i == 1) {
+            return cost[i];
+        }
+        if (dp[i] != -1) {
+            return dp[i];
+        }
+        dp[i] = cost[i] + Math.min(minCost(i - 1, cost, dp), minCost(i - 2, cost, dp));
+        return dp[i];
+    }
 }
