@@ -2,7 +2,7 @@ class Solution {
     public int uniquePathsWithObstacles(int[][] obstacleGrid) {
         int m = obstacleGrid.length;
         int n = obstacleGrid[0].length;
-        int dp[][] = new int[m][n]; // Use m x n size
+        int dp[][] = new int[m+1][n+1]; // Use m x n size
 
         // Initialize dp array with -1 indicating unvisited cells
         for (int i = 0; i < m; i++) {
