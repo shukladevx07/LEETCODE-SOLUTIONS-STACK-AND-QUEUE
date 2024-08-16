@@ -1,17 +1,36 @@
+import java.util.LinkedList;
+import java.util.Queue;
+
 class Solution {
     public int coinChange(int[] coins, int amount) {
-        int[] dp = new int[amount + 1];
-        Arrays.fill(dp, amount + 1); // Fill the array with a large number (amount + 1 is effectively "infinity")
-        dp[0] = 0; // Base case: no coins are needed to make amount 0
+        if (amount == 0) return 0;
 
-        for (int i = 1; i <= amount; i++) {
-            for (int coin : coins) {
-                if (i - coin >= 0) {
-                    dp[i] = Math.min(dp[i], dp[i - coin] + 1);
+        boolean[] visited = new boolean[amount + 1];
+        Queue<Integer> queue = new LinkedList<>();
+        queue.offer(amount);
+        visited[amount] = true;
+
+        int level = 0;
+        
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            level++;
+            
+            for (int i = 0; i < size; i++) {
+                int current = queue.poll();
+                
+                for (int coin : coins) {
+                    int next = current - coin;
+                    if (next == 0) {
+                        return level;
+                    } 
+                    if (next > 0 && !visited[next]) {
+                        queue.offer(next);
+                        visited[next] = true;
+                    }
                 }
             }
         }
-
-        return dp[amount] > amount ? -1 : dp[amount];
+        return -1;
     }
 }
