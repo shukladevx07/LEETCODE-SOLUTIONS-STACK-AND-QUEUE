@@ -1,40 +1,28 @@
 class Solution {
     public boolean parseBoolExpr(String expression) {
-        if(expression.charAt(0) == 't'){
-            return true;
-        }
-        if(expression.charAt(0) == 'f'){
-            return false;
-        }
-        if(expression.charAt(0)=='!'){
-            return !parseBoolExpr(expression.substring(2,expression.length()-1));
-        }
-        return parseList(expression.substring(2,expression.length()-1),expression.charAt(0)=='|');
-        
-    }
-
-    private boolean parseList(String expression, boolean operator){
-        int parenParity = 0;
-        int prevIdx = 0;
-        int idx = 0;
-        while(idx<expression.length()){
-            if(expression.charAt(idx)=='('){
-                parenParity++;
-            }
-            else if(expression.charAt(idx)==')'){
-                parenParity--;
-            }
-            else if(expression.charAt(idx)==',' && parenParity==0){
-                if(parseBoolExpr(expression.substring(prevIdx,idx))==operator){
-                    return operator;
+        Stack<Character> stack = new Stack<>();
+        for (char c : expression.toCharArray()) {
+            if (c == ')') {
+                // When we hit a closing bracket, evaluate the expression inside the brackets
+                Set<Character> seen = new HashSet<>();
+                while (stack.peek() != '(') {
+                    seen.add(stack.pop());
                 }
-                prevIdx=idx+1;
+                stack.pop(); // remove the '(' from stack
+
+                char operator = stack.pop(); // operator before '('
+
+                if (operator == '&') {
+                    stack.push(seen.contains('f') ? 'f' : 't'); // AND operation
+                } else if (operator == '|') {
+                    stack.push(seen.contains('t') ? 't' : 'f'); // OR operation
+                } else if (operator == '!') {
+                    stack.push(seen.contains('t') ? 'f' : 't'); // NOT operation
+                }
+            } else if (c != ',') {
+                stack.push(c); // push the current character unless it's a comma
             }
-            idx++;
         }
-        if(parseBoolExpr(expression.substring(prevIdx,idx))==operator){
-            return operator;
-        }
-        return !operator;
+        return stack.pop() == 't'; // final result on top of the stack
     }
 }
