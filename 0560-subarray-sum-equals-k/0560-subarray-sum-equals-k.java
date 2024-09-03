@@ -1,24 +1,27 @@
+import java.util.HashMap;
+
 class Solution {
     public int subarraySum(int[] nums, int k) {
-        int n=nums.length;
-        int count=0;
-        int presum=0;
-        Map<Integer,Integer> map=new HashMap<>();
-        map.put(0,1);//to deal with the cases where x-k==0
+        // Initialize a hashmap to store cumulative sums and their frequencies
+        HashMap<Integer, Integer> cumulativeSumMap = new HashMap<>();
+        cumulativeSumMap.put(0, 1); // Base case: there's one way to have a sum of 0 (using no elements)
 
-        for(int i=0;  i<n;  i++){
-            presum+=nums[i];
+        int cumulativeSum = 0;
+        int count = 0;
 
-            int remove=presum-k;//as we will remove upto this sum to find our desired subarray
-            //look for occurence times of this remove as no(x-k)==no(k) right,which we are searching for
-            count+=map.getOrDefault(remove,0);//0 as if remove not found let it be 0
+        // Iterate over the array
+        for (int num : nums) {
+            cumulativeSum += num;
 
-            map.put(presum,map.getOrDefault(presum,0)+1);//frequency of presum to look for x-k
-           
+            // Check if there is a previous cumulative sum that matches cumulativeSum - k
+            if (cumulativeSumMap.containsKey(cumulativeSum - k)) {
+                count += cumulativeSumMap.get(cumulativeSum - k);
+            }
 
+            // Update the cumulative sum frequency map
+            cumulativeSumMap.put(cumulativeSum, cumulativeSumMap.getOrDefault(cumulativeSum, 0) + 1);
         }
 
         return count;
-        
     }
 }
