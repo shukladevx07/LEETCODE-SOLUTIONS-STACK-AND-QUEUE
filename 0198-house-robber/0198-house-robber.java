@@ -1,18 +1,35 @@
 class Solution {
     public int rob(int[] nums) {
-        int n = nums.length;
-        if (n == 0) return 0;
-        if (n == 1) return nums[0];
+        // Create a dp array initialized to -1 to store results of subproblems
+        int[] dp = new int[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            dp[i] = -1;
+        }
+        // Start the recursion from the first house
+        return robHouse(nums, 0, dp);
+    }
 
-        int rob1 = 0; // Maximum money robbed up to the previous house
-        int rob2 = 0; // Maximum money robbed up to the current house
-
-        for (int i = 0; i < n; i++) {
-            int newRob = Math.max(rob1 + nums[i], rob2);
-            rob1 = rob2;
-            rob2 = newRob;
+    private int robHouse(int[] nums, int currentIndex, int[] dp) {
+        // Base case: If the current index is out of bounds, return 0
+        if (currentIndex >= nums.length) {
+            return 0;
         }
 
-        return rob2;
+        // Check if we have already solved this subproblem
+        if (dp[currentIndex] != -1) {
+            return dp[currentIndex];
+        }
+
+        // Option 1: Rob the current house and skip the next house
+        int robCurrent = nums[currentIndex] + robHouse(nums, currentIndex + 2, dp);
+
+        // Option 2: Skip the current house and move to the next one
+        int skipCurrent = robHouse(nums, currentIndex + 1, dp);
+
+        // Store the result of the current subproblem in the dp array
+        dp[currentIndex] = Math.max(robCurrent, skipCurrent);
+
+        // Return the result for the current index
+        return dp[currentIndex];
     }
 }
